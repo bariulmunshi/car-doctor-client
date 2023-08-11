@@ -1,3 +1,14 @@
+## Table of content 
+- [CRUD Method-Database Integrate](#crud-method-database-integrate)
+  - [step by step New database setup](#step-by-step-new-database-setup)
+  - [POST Method](#post-method)
+  - [READ Method](#post-method)
+  - [DELETE Method](#delete-method)
+  - [Update Data](#update-data)
+- [express.js-Backend](#expressjs-backend)
+  - [Reuse:step by step set-up](#reusestep-by-step-set-up)
+  - [DirectUse: express.js set up-Backend](#directuse-expressjs-set-up-backend)
+- [Firebase-React Authentication](#firebase-react-authentication)
 # step by step project setup
 
 - React Router
@@ -13,7 +24,7 @@
    >In index.js file: require('dotenv').config()
    >npm install sweetalert2
   ```
-# CRUD Method(Database Integrate)
+# CRUD Method-Database Integrate
 
 ## step by step New database setup
 - Mongodb Database connection for new database
@@ -264,7 +275,7 @@
 
   ```
 
-#  express.js(Backend)
+#  express.js-Backend
 
 ##  Reuse:step by step set-up
   ```sh
@@ -405,7 +416,7 @@ step-4.2: In server index.js file import
   > res.send(newUser);
   > })
 
-## DirectUse: express.js set up(Backend)
+## DirectUse: express.js set up-Backend
 
 ```sh
  step-1: > npm init -y
@@ -442,7 +453,7 @@ step-4.2: In server index.js file import
     const result = await usersCollection.insertOne(user);
     res.send(result);
 ```
-# Firebase(React Authentication)
+# Firebase-React Authentication
 ## setup firebase in project
 1. create firebase project & create a web app
 2. npm install firebase & save firebase config and export app

@@ -1,36 +1,9 @@
-# VS code set up
-
-- Word wrap
-- cursor expand
-- Prettier - Code formatter
-- formatter: format on save ,prettier formatter
-- vs code font family
-- Mouse Wheel zoom
-- mini map
-- Material icon theme
-- Path Intelligence
-- Markdown Preview Enhanced
-- Image preview
-- Markdown Preview Enhanced
-- Live server
-- code runner
-- Code Spell Check
-- Tailwind CSS intelligence
-- Learn with sumit
-- Terminal set up
-- React Extension Pack
-- ES7+ React/Redux/React-Native snippets
-- React Native Tools
-
-## step by step project setup
+# step by step project setup
 
 - React Router
 - Tailwind
 - .env.local: 69-7 (Recap) Create a simple Login page with firebase integration
 - eslint file error solve: "react/prop-types","off",
-
-## step by step
-
 - project build command
   ```sh
    >mkdir coffee-store-server
@@ -40,6 +13,9 @@
    >In index.js file: require('dotenv').config()
    >npm install sweetalert2
   ```
+# CRUD Method(Database Integrate)
+
+## step by step New database setup
 - Mongodb Database connection for new database
   ```sh
    Go to mongodb atlas site
@@ -288,13 +264,15 @@
 
   ```
 
-# Reuse:step by step set-up express.js
+#  express.js(Backend)
 
+##  Reuse:step by step set-up
+  ```sh
+     step-1: create file >mkdir file-name, run command on this file >npm init -y & Express install: npm install express 
+     or npm i express or npm  i express cors mongodb dotenv
+     step-2: Add in script > "start": "node index.js",
+  ```
 ```sh
-                After going to express js
-step-1: create file >mkdir file-name, run command on this file >npm init -y & Express install: npm install express or npm i express
-step-2: Add in script > "start": "node index.js",
-
                 Go to hello world doc
 step-3.1:  create file named same as entry point from package.json file (index.js)
 step-3.2: In index.js file import express > const express=require('express') (it used after come ES6 module)
@@ -320,6 +298,10 @@ step-4.1: In server folder >npm install cors
 step-4.2: In server index.js file import
  > const cors=require('cors')
  > app.use(cors())
+ > app.use(express.json()); {
+   In a Node.js and Express application, the app.use(express.json()) middleware is used to parse
+   incoming JSON data from client requests. When a client sends a request with JSON data in the 
+   request body, this middleware parses the JSON data and populates the req.body object with the parsed data}
 ```
 
 - Additional > if I want to run data from json file
@@ -423,11 +405,11 @@ step-4.2: In server index.js file import
   > res.send(newUser);
   > })
 
-# ReUse: Step by step express.js set up
+## DirectUse: express.js set up(Backend)
 
 ```sh
  step-1: > npm init -y
- step-2: > npm i express cors mongodb
+ step-2: > npm  i express cors mongodb dotenv
  step-3: in package.json file create >"start": "node index.js",
  step-4: create file > index.js
  step-5: In index.js file
@@ -440,12 +422,12 @@ step-4.2: In server index.js file import
   app.use(cors());
   app.use(express.json());
 
-  /* check path */
+  /* check root path */
   app.get('/',(req,res)=>{
     res.send('Simple crud running')
   })
 
-  /* data path */
+  /* check running server port */
 
   app.listen(port,()=>{
     console.log(`Simple crud is running:${port}`);
@@ -460,3 +442,347 @@ step-4.2: In server index.js file import
     const result = await usersCollection.insertOne(user);
     res.send(result);
 ```
+# Firebase(React Authentication)
+## setup firebase in project
+1. create firebase project & create a web app
+2. npm install firebase & save firebase config and export app
+3. Build >Authentication >Get started >Enable SignIn method
+4. Complete the sign up & Login form
+5. Add onSubmit handler for collect form data
+    ```sh
+    onSubmit={handleSignUp}
+
+    const handleSignUp=event=>{
+      event.preventDefault()
+      const form=event.target
+      const email=form.email.value
+      const password=form.password.value
+      const confirmPassword=form.confirm.value
+      console.log(email,password,confirmPassword)
+      }
+    ```
+6. validation form data
+    ```sh
+      step-1: declare state
+      const [error, setError] = useState("");
+
+      step-2:Add condition for validation
+      if(password!==confirmPassword){
+      setError('Your password did not match')
+      return
+    }
+      else if (!/(?=.*[A-Z])/.test(password)) {
+        setError("Please Add at least one uppercase");
+        return;
+      } else if (!/(?=.*[A-Z].*[A-Z])/.test(password)) {
+        setError("Please add at least two numbers");
+        return;
+      } else if (password.length < 6) {
+        setError("Please add at least 6 character in your password");
+        return;
+      }
+
+      step-3: Display the catch error if exist
+      <p className="text-error">{error}</p>
+    ```
+7. {context Api/redux(redux-toolkit)/database} for share form authentication information in every route
+
+    here for context api:
+
+    step-1: create context Provider file(AuthProvider)
+
+    step-2: createContext with export & set context value with children props
+   ```sh
+     export const AuthContext=createContext(null);
+
+     const AuthProvider = ({children}) => {
+     const user={displayName:'Bariul'}
+      const authInfo={
+          user
+      }
+     return (
+     <AuthContext.Provider value={authInfo}>
+      {children}
+     </AuthContext.Provider>
+     );};
+   ```
+8. set the AuthProvider path 
+   ```sh
+      ReactDOM.createRoot(document.getElementById("root")).render(
+      <React.StrictMode>
+         <AuthProvider>
+           <RouterProvider router={router} />
+         </AuthProvider>
+      </React.StrictMode>
+      );
+   ```
+9. Now createContext as useContext For use Another component 
+   ```sh
+    1. const {user,createUser}=useContext(AuthContext)
+    1. const {user,signIn}=useContext(AuthContext)
+    2. check:  console.log(user);
+    2. check:  console.log(signIn,createUser);
+    3. call the function in eventHandler function: createUser(email,password)
+    3. call the function in eventHandler function: signIn(email,password)
+   ```
+10. Now set Auth in AuthProvider file from firebase authentication doc
+    ```sh
+      import { getAuth } from "firebase/auth";
+      const auth = getAuth(app);
+      import app from './../../firebase/firebase.config';
+    ```
+11. set auth user value to useState
+    ```sh
+    const [user,setUser]=useState(null)
+    ```
+12. for register
+    ```sh
+      step-1: In AuthProvider file
+      const createUser=(email,password)=>{
+        return createUserWithEmailAndPassword(auth,email,password); //its firebase function
+      }
+       
+       step-2:set createUser in context object
+
+       step-3: In register/signUp file: call the function in eventHandler function:
+
+        {before call follow step-9:}
+
+         createUser(email,password)
+        .then(result=>{
+          const loggedUser=result.user;
+          console.log(loggedUser);
+        })
+        .catch(error=>{
+          console.log(error)
+        })
+    ```
+13. For reset Error
+    ```sh
+        setError("") //call it before validation 
+    ```
+
+14. for Login/signIn
+    ```sh
+      step-1: In AuthProvider file
+      const signIn=(email,password)=>{
+        return signInWithEmailAndPassword(auth,email,password); //its firebase function
+      }
+       
+       step-2:set signIn in context object
+
+       step-3: In signIn/Login file: call the function in eventHandler function:
+
+        {before call follow step-9:}
+
+         signIn(email,password)
+        .then(result=>{
+          const loggedUser=result.user;
+          console.log(loggedUser);
+          form.reset()
+        })
+        .catch(error=>{
+          console.log(error)
+        })
+    ```
+15. For logOut: we will use logout in header file
+    ```sh
+      step-1: In AuthProvider file
+      const logOut=()=>{
+      return signOut(auth)
+      }
+      step-2:set logOut in context object
+      step-3:In header file: call the function in eventHandler button:
+      {before call follow step-9:}
+
+      {user && <span>Welcome{user.email} <button onClick={handleLogOut}>Sing Out</button> </span>}
+
+    ```
+
+### Here Just set up firebase sign Up, Login & LogOut using Context API from one file & step-11 still null 
+
+16. For set value in step-11 user need call outside api by useEffect
+
+    what's the purpose of onAuthStateChanged in Firebase authentication?
+    Answer: It listens for changes in the user authentication state.
+    
+     What's the work of unsubscribe? Answer: catch the changes 
+
+    ```sh
+      /* observer user auth state */
+    useEffect(()=>{
+     const unsubscribe= onAuthStateChanged(auth,currentUser=>{
+        setUser(currentUser)
+      })
+      /* stop observing while unmounting */
+      return ()=>{
+        return unsubscribe()
+      }
+    },[])
+    ```
+
+17. Private Route & Navigate after Login
+    ```sh
+      step-1: create file 
+      const PrivateRoute = ({children}) => {
+      const {user}=useContext(AuthContext);
+      if(user){
+        return children;
+      }
+      return <Navigate to='/login' replace={true}></Navigate>;
+    };
+    step-2: do private which route want to private
+     <PrivateRoute>
+            <CheckOut></CheckOut> 
+    </PrivateRoute>
+    ```
+
+18. For ignore Re-loading issue
+    ```sh
+        step-1: In AuthProvider file create a useState
+        const [loading,setLoading]=useState(true)
+
+        step-2: In AuthProvider file set setLoading(true) in createUser , signIn & logOut
+        > setLoading(true)
+
+        step-3: If state gonna change then call setLoading in useEffect
+        > setLoading(false)
+        
+        step-4: For use it now call it in context 
+        loading,
+
+        step-5:use it PrivateRoute
+        const {user,loading}=useContext(AuthContext) 
+        if(loading){
+        return <progress className="progress w-56"></progress>;
+      }
+    ```
+
+19. After Login where I want to go
+    ```sh
+          useNavigate from react Router dom
+      step-1: In login file set useNavigate state
+      const navigate=useNavigate()
+      
+      step-2: In Login file call it in below of signIn(email,password) & within   .then(result=>{})
+      > navigate('/')
+    ```
+20. After Login Redirect Navigate to the right route
+    ```sh
+      step-1: In login & PrivateRoute both file set
+        > const location=useLocation()
+        check location: console.log(location)
+
+      step-2:In PrivateRoute set state={{from: location}} replace in Navigate
+      return<Navigate to="/login" state={{from: location}} replace></Navigate>
+      
+      step-3: In login file
+      const from=location.state?.from?.pathname || '/'
+      
+      step-4: In login file call it in signIn/login function 
+       navigate(from,{replace:true})
+    ```
+
+21. Host your react app to firebase and Show password
+
+    ```sh
+      just one time need install in pc
+      step-1: npm install -g firebase-tools
+      step-2: firebase login
+
+      for each project one time
+       * HOSTING
+        * --------------------
+        * One time per PC
+        * 1. npm install -g firebase-tools
+        * 2. firebase login
+        * 
+        * For each project one time
+        * 1. firebase init
+        * 2. proceed 
+        * 3. hosting: firebase (up and down arrow) use space bar to select
+        * 4. existing project 
+        * 5. select the project careful
+        * 6. which project as public directory: dist
+        * 7. single page application: yes
+        * 8. continuous deployment: no
+        * 
+        * For every time deploy
+        * 1. npm run build
+        * 2. firebase deploy
+    ```
+
+22. show password
+    ```sh
+      step-1: set state
+        const [show,setShow]=useState(false)
+
+      step-2: set onClick button
+      <p onClick={()=>setShow(!show)}><small>
+            {
+              show? <span>Hide Password</span>:<span>Show password</span>
+            }
+            </small></p>
+      
+      step-3: set input type with ternary condition
+        type={show? "text": "password"}
+    ```
+23. Accept Terms and conditions
+
+    ```sh
+    step-1: create a component >set Route >In route set a link
+    > <p>Go back to <Link to="/register">Register</Link></p>
+
+    step-2: In register file create a checkbox with onClick handler
+    > <Form.Group className="mb-3" controlId="formBasicCheckbox">
+          <Form.Check
+          onClick={handleAccepted}
+          type="checkbox"
+          name='a'
+          label={<>Accept<Link to="/terms">Terms & condition</Link></>} />
+        </Form.Group>
+
+    step-3: Declare a state in register file
+    > const [accepted,setAccepted]=useState(false);
+
+    step-4: add function & call for checked
+    >const handleAccepted=event=>{
+    //console.log(event.target.checked)
+    setAccepted(event.target.checked);
+    }
+
+    step-5: set button disable if not accept term & condition
+    > <Button variant="primary" disabled={!accepted} type="submit">
+          Register
+        </Button>
+    ```
+
+24. firebase setup
+    ```sh
+    step-1: firebase init
+    step-2: npm run build 
+    step-3: firebase deploy
+    ```
+# VS code set up
+
+- Word wrap
+- cursor expand
+- Prettier - Code formatter
+- formatter: format on save ,prettier formatter
+- vs code font family
+- Mouse Wheel zoom
+- mini map
+- Material icon theme
+- Path Intelligence
+- Markdown Preview Enhanced
+- Image preview
+- Markdown Preview Enhanced
+- Live server
+- code runner
+- Code Spell Check
+- Tailwind CSS intelligence
+- Learn with sumit
+- Terminal set up
+- React Extension Pack
+- ES7+ React/Redux/React-Native snippets
+- React Native Tools

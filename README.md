@@ -2,7 +2,7 @@
 - [CRUD Method-Database Integrate](#crud-method-database-integrate)
   - [step by step New database setup](#step-by-step-new-database-setup)
   - [POST Method](#post-method)
-  - [READ Method](#post-method)
+  - [READ Method](#read-method)
   - [DELETE Method](#delete-method)
   - [Update Data](#update-data)
 - [express.js-Backend](#expressjs-backend)
@@ -24,14 +24,34 @@
    >In index.js file: require('dotenv').config()
    >npm install sweetalert2
   ```
+
+- Insert bulk data in database
+  ```sh
+     shortcut system for insert data
+   step-1: copy data & insert the collection to database collection 
+    load data
+    Load services data
+   step-2: for specific use query & for all use find
+  ```
+
+
 # CRUD Method-Database Integrate
 
 ## step by step New database setup
 - Mongodb Database connection for new database
   ```sh
    Go to mongodb atlas site
+   > Database > connect >Drivers >copy & paste it index.js file
+   > create file(.env) for keep password
+   > In index.js file: require('dotenv').config() 
+     DB_USER=docUser
+     DB_PASS=rfzGdApBdPpLH2kF
+   > check:console.log(process.env.DB_PASS)
+   > convert the username pass holder in template string & 
+   keep username & password
+   const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.8uchuib.
+   mongodb.net/?retryWrites=true&w=majority`;
    > Database Access: create username password
-   > Database > connect >Drivers >copy
   ```
 
 ### POST Method
@@ -91,6 +111,7 @@
 - Data READ
 
   ```sh
+          for read all data
    step-1:get/read data from server site
    > app.get('/coffee',async(req,res)=>{
       const cursor=coffeeCollection.find()
@@ -101,9 +122,33 @@
    >path: "/",
     element: <App></App>,
     loader: () => fetch("http://localhost:5000/coffee"),
-   step-2.1: In the created file use useLoaderData
-   >const coffees=useLoaderData()
+    step-2.1: In the created file use useLoaderData
+    >const coffees=useLoaderData()
 
+          for read some data
+   step-1: app.get('/bookings',async(req,res)=>{
+    
+   })
+
+
+          for read specific data
+   step-1:  /* created api for read specific data */
+    app.get('/services/:id',async(req,res)=>{
+      const id=req.params.id;
+      const query={_id: new ObjectId(id)}
+      const options = {
+        // Include only the `title` and `imdb` fields in the returned document
+        projection: { title: 1, price: 1,service_id:1},
+      };
+      const result=await serviceCollection.findOne(query,options);
+      res.send(result);
+    })
+    step-2: load data in client side from server link
+       > path:'/checkout/:id',
+        element:<Checkout></Checkout>,
+        loader:({params})=>fetch(`http://localhost:5000/services/${params.id}`)
+    step-2.1: In the created file use useLoaderData
+    >const checkout=useLoaderData()
   ```
 
 ### DELETE Method
@@ -152,6 +197,8 @@
             console.log(data);
             if (data.deletedCount > 0) {
                Swal.fire("Deleted!", "Your coffee has been deleted.", "success");
+               const remaining=users.filter(user=>user._id!==_id);
+               setUsers(remaining);
             }
           });
       }
@@ -179,8 +226,10 @@
 ### Update Data
 
 - Update data
-
+   
   ```sh
+       put=na thakle add kore deewa
+       patch=thakle oita update kora
   step-1: create user data loader api in backend side
    > app.get("/coffee/:id", async (req, res) => {
       const id = req.params.id;
@@ -301,6 +350,9 @@ step-3.7: check connection with app & port(check the console In which server por
 step-3.8: check by nodemon for watch live updating
     check version >nodemon -v
     start server watch >nodemon index.js
+step-3.9: create file(.env) root of the project
+   > In index.js file: require('dotenv').config() 
+
 
                        middleware setup
                To  Allow access-control-allow-origin
@@ -426,6 +478,7 @@ step-4.2: In server index.js file import
  step-5: In index.js file
  >const express = require('express');
   const cors = require('cors');
+  require('dotenv').config()
   const app=express();
   const port=process.env.PORT || 5000;
 
@@ -688,7 +741,9 @@ step-4.2: In server index.js file import
       return<Navigate to="/login" state={{from: location}} replace></Navigate>
       
       step-3: In login file
+      const navigate=useNavigate();
       const from=location.state?.from?.pathname || '/'
+
       
       step-4: In login file call it in signIn/login function 
        navigate(from,{replace:true})
@@ -797,3 +852,11 @@ step-4.2: In server index.js file import
 - React Extension Pack
 - ES7+ React/Redux/React-Native snippets
 - React Native Tools
+- Auto Import
+- Auto Rename Tag
+- ESLint
+- npm intelligence 
+- Postman
+- Stylelint
+- VSCode React Refactor
+

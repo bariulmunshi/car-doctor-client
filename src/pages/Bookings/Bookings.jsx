@@ -7,9 +7,14 @@ import Swal from 'sweetalert2';
 const Bookings = () => {
     const {user}=useContext(AuthContext);
     const [bookings,setBookings]=useState([])
-    const url=`http://localhost:5000/bookings?bariulinsights=${user?.email}`;
+    const url=`http://localhost:5000/bookings?email=${user?.email}`;
     useEffect(()=>{
-        fetch(url)
+        fetch(url,{
+          method:'GET',
+          headers:{
+            authorization:`Bearer ${localStorage.getItem('car-access-token')}`
+          }
+        })
         .then(res=>res.json())
         .then(data=>setBookings(data))
     },[url])

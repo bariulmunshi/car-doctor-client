@@ -50,6 +50,7 @@
    step-1: >npm install jsonwebtoken
    step-2: >const jwt=require('jsonwebtoken');
    step-3: create Access token Secret:>node>require('crypto').randomBytes(64).toString('hex')
+   & set it on env file:ACCESS_TOKEN_SECRET=cdb62f1b191c3430452c53d718c183d8f2c43d2ea733ec1bf9ac9345ddc559ba4bd2b4bc2bf14b7f5c01efd852d2b755d04a440233ce671d4da223cfa90731af
    step-4: Create JWT Token on server
    >/JWT:API create
     app.post('/jwt',(req,res)=>{
@@ -85,6 +86,34 @@
     })
     step-6: Remove token from local storage: got to Navbar logout 
     > localStorage.removeItem('car-access-token');
+   ```
+### Send jwt token in the server, verify and decode jwt token
+   ```sh
+   step-1: Declare method from  client side
+   >{
+          method:'GET',
+          headers:{
+            authorization:`Bearer ${localStorage.getItem('car-access-token')}`
+          }
+   step-2: Declare function from sever side
+   >const verifyJWT=(req,res,next)=>{
+  console.log('hitting verify JWT');
+  console.log(req.headers.authorization);
+  const authorization=req.headers.authorization;
+  if(!authorization){
+    return res.status(401).send({error:true,message:'Unauthorized Access'})
+  }
+  const token=authorization.split(' ')[1];
+  console.log('token inside Verify JWT',token)
+  //verify & decode
+  jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, (error,decoded)=>{
+    if(error){
+      return res.status(403).send({error:true,message:'unauthorized access'})
+    }
+    req.decoded=decoded;
+    next();
+  })  
+}
    ```
 
 

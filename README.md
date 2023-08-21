@@ -1,4 +1,5 @@
 ## Table of content 
+- [JWT](#jwt)
 - [CRUD Method-Database Integrate](#crud-method-database-integrate)
   - [step by step New database setup](#step-by-step-new-database-setup)
   - [POST Method](#post-method)
@@ -33,6 +34,56 @@
     Load services data
    step-2: for specific use query & for all use find
   ```
+# What's JWT?
+### Introduction
+- How to secure an API using a JWT token?
+- JWT mainly is mainly used for authorization(from server) purpose, not authentication(from firebase)
+- Industry standard RFC 7519
+- Securely transmits information between parties as a JSON object.
+- Digitally Signed 
+- Get Two Token {access(like passport,XSS,Local storage,HTTP only cookie),refresh(like national id card)} from server
+- Header(Authorization:Bearer-access token), payload(data), verify Signature
+### How to use JWT
+   ```sh
+   step-1: >npm install jsonwebtoken
+   step-2: >const jwt=require('jsonwebtoken');
+   step-3: create Access token Secret:>node>require('crypto').randomBytes(64).toString('hex')
+   step-4: Create JWT Token on server
+   >/JWT:API create
+    app.post('/jwt',(req,res)=>{
+      const user=req.body;
+      console.log(user);
+      const token=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{
+        expiresIn:'1h'});
+        console.log(token);
+        res.send({token});
+    })
+   step-5: GET JWT Token on client side
+   >signIn(email,password)
+    .then(result=>{
+      const user=result.user;
+      const loggedUser={
+        email:user.email
+      }
+      console.log(loggedUser);
+      fetch('http://localhost:5000/jwt',{
+        method:'POST',
+        headers:{
+          'content-type':'application/json'
+        },
+        body:JSON.stringify(loggedUser)
+      })      
+      .then(res=>res.json())
+      .then(data=>{
+        console.log('jwt response',data);
+        //warning:Local storage isn't the best(second best place) to store access token
+        localStorage.setItem('car-access-token',data.token);
+        navigate(from,{replace:true})
+      })
+    })
+    step-6: Remove token from local storage: got to Navbar logout 
+    > localStorage.removeItem('car-access-token');
+   ```
 
 
 # CRUD Method-Database Integrate

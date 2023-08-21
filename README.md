@@ -1,7 +1,9 @@
-## Table of content 
+## Table of content
+
 - [What's JWT?](#whats-jwt)
   - [Introduction](#introduction)
   - [How to use JWT?](#how-to-use-jwt)
+  - [From Programming hero](#from-programming-hero)
 - [CRUD Method-Database Integrate](#crud-method-database-integrate)
   - [step by step New database setup](#step-by-step-new-database-setup)
   - [POST Method](#post-method)
@@ -12,6 +14,7 @@
   - [Reuse:step by step set-up](#reusestep-by-step-set-up)
   - [DirectUse: express.js set up-Backend](#directuse-expressjs-set-up-backend)
 - [Firebase-React Authentication](#firebase-react-authentication)
+
 # step by step project setup
 
 - React Router
@@ -19,6 +22,7 @@
 - .env.local: 69-7 (Recap) Create a simple Login page with firebase integration
 - eslint file error solve: "react/prop-types","off",
 - project build command
+
   ```sh
    >mkdir coffee-store-server
    >npm init -y
@@ -31,105 +35,161 @@
 - Insert bulk data in database
   ```sh
      shortcut system for insert data
-   step-1: copy data & insert the collection to database collection 
+   step-1: copy data & insert the collection to database collection
     load data
     Load services data
    step-2: for specific use query & for all use find
   ```
+
 # What's JWT?
+
 ### Introduction
+
 - How to secure an API using a JWT token?
 - JWT mainly is mainly used for authorization(from server) purpose, not authentication(from firebase)
 - Industry standard RFC 7519
 - Securely transmits information between parties as a JSON object.
-- Digitally Signed 
+- Digitally Signed
 - Get Two Token {access(like passport,XSS,Local storage,HTTP only cookie),refresh(like national id card)} from server
 - Header(Authorization:Bearer-access token), payload(data), verify Signature
-### How to use JWT?
-   ```sh
-   step-1: >npm install jsonwebtoken
-   step-2: >const jwt=require('jsonwebtoken');
-   step-3: create Access token Secret:>node>require('crypto').randomBytes(64).toString('hex')
-   & set it on env file:ACCESS_TOKEN_SECRET=cdb62f1b191c3430452c53d718c183d8f2c43d2ea733ec1bf9ac9345ddc559ba4bd2b4bc2bf14b7f5c01efd852d2b755d04a440233ce671d4da223cfa90731af
-   step-4: Create JWT Token on server
-   >/JWT:API create
-    app.post('/jwt',(req,res)=>{
-      const user=req.body;
-      console.log(user);
-      const token=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{
-        expiresIn:'1h'});
-        console.log(token);
-        res.send({token});
-    })
-   step-5: GET JWT Token on client side
-   >signIn(email,password)
-    .then(result=>{
-      const user=result.user;
-      const loggedUser={
-        email:user.email
-      }
-      console.log(loggedUser);
-      fetch('http://localhost:5000/jwt',{
-        method:'POST',
-        headers:{
-          'content-type':'application/json'
-        },
-        body:JSON.stringify(loggedUser)
-      })      
-      .then(res=>res.json())
-      .then(data=>{
-        console.log('jwt response',data);
-        //warning:Local storage isn't the best(second best place) to store access token
-        localStorage.setItem('car-access-token',data.token);
-        navigate(from,{replace:true})
-      })
-    })
-    step-6: Remove token from local storage: got to Navbar logout 
-    > localStorage.removeItem('car-access-token');
-   ```
-### Send jwt token in the server, verify and decode jwt token
-   ```sh
-   step-1: Declare method from  client side
-   >{
-          method:'GET',
-          headers:{
-            authorization:`Bearer ${localStorage.getItem('car-access-token')}`
-          }
-   step-2: Declare function from sever side
-   >const verifyJWT=(req,res,next)=>{
-  console.log('hitting verify JWT');
-  console.log(req.headers.authorization);
-  const authorization=req.headers.authorization;
-  if(!authorization){
-    return res.status(401).send({error:true,message:'Unauthorized Access'})
-  }
-  const token=authorization.split(' ')[1];
-  console.log('token inside Verify JWT',token)
-  //verify & decode
-  jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, (error,decoded)=>{
-    if(error){
-      return res.status(403).send({error:true,message:'unauthorized access'})
-    }
-    req.decoded=decoded;
-    next();
-  })  
-}
-   ```
 
+### How to use JWT?
+
+```sh
+step-1: >npm install jsonwebtoken
+step-2: >const jwt=require('jsonwebtoken');
+step-3: create Access token Secret:>node>require('crypto').randomBytes(64).toString('hex')
+& set it on env file:ACCESS_TOKEN_SECRET=cdb62f1b191c3430452c53d718c183d8f2c43d2ea733ec1bf9ac9345ddc559ba4bd2b4bc2bf14b7f5c01efd852d2b755d04a440233ce671d4da223cfa90731af
+step-4: Create JWT Token on server
+>/JWT:API create
+ app.post('/jwt',(req,res)=>{
+   const user=req.body;
+   console.log(user);
+   const token=jwt.sign(user,process.env.ACCESS_TOKEN_SECRET,{
+     expiresIn:'1h'});
+     console.log(token);
+     res.send({token});
+ })
+step-5: GET JWT Token on client side
+>signIn(email,password)
+ .then(result=>{
+   const user=result.user;
+   const loggedUser={
+     email:user.email
+   }
+   console.log(loggedUser);
+   fetch('https://car-doctor-server-three-weld.vercel.app/jwt',{
+     method:'POST',
+     headers:{
+       'content-type':'application/json'
+     },
+     body:JSON.stringify(loggedUser)
+   })
+   .then(res=>res.json())
+   .then(data=>{
+     console.log('jwt response',data);
+     //warning:Local storage isn't the best(second best place) to store access token
+     localStorage.setItem('car-access-token',data.token);
+     navigate(from,{replace:true})
+   })
+ })
+ step-6: Remove token from local storage: got to Navbar logout
+ > localStorage.removeItem('car-access-token');
+```
+
+### Send jwt token in the server, verify and decode jwt token
+
+```sh
+step-1: Declare method from  client side
+>{
+       method:'GET',
+       headers:{
+         authorization:`Bearer ${localStorage.getItem('car-access-token')}`
+       }
+step-2: Declare function from sever side
+>const verifyJWT=(req,res,next)=>{
+console.log('hitting verify JWT');
+console.log(req.headers.authorization);
+const authorization=req.headers.authorization;
+if(!authorization){
+ return res.status(401).send({error:true,message:'Unauthorized Access'})
+}
+const token=authorization.split(' ')[1];
+console.log('token inside Verify JWT',token)
+//verify & decode
+jwt.verify(token,process.env.ACCESS_TOKEN_SECRET, (error,decoded)=>{
+ if(error){
+   return res.status(403).send({error:true,message:'unauthorized access'})
+ }
+ req.decoded=decoded;
+ next();
+})
+}
+```
+### From Programming hero
+  ```sh
+    /**
+ * JWT Main purpose: secure your api
+ * ---------------------------------------
+ *              CREATE TOKEN
+ * --------------------------------------
+ * 1. client: after user login send user basic info to create token
+ * 
+ * 2. in the server side: install npm i jsonwebtoken
+ * 3. import jsonwebtoken
+ * 4. jwt.sign(payload, secret, {expires} )
+ * 5. return token to the client side
+ * 
+ * 6. after receiving the token store it either httponly cookies or localstorage (second best solution)
+ * 
+ * 7. use a general space onAuthStateChange > AuthProvider
+ * -------------------------------------
+ *              SEND TOKEN TO SERVER
+ * ---------------------------------------
+ * 1. for sensitive api call ( ) send authorization headers
+ *  { authorization: 'Bearer token'}
+ * 
+ * -------------------------------------
+ *              VERIFY TOKEN
+ * --------------------------------------
+ * 
+ * 1. Create a function called verifyJWT (middleware)
+ * 2. this function will have three params: req, res, next 
+ * 3. First check whether the authorization headers exists 
+ * 4. if not send 401 
+ * 5. get the token out of the authorization header
+ * 6. call jwt.verify(token, secret, (err, decoded))
+ * 7. if err => send 401
+ * 8. set decoded to the req object so that we can retrieve it later
+ * 9. call the next() to go to the next function 
+ * 
+ * -----------------------
+ * 1. check wether token has the email that matches with the request email
+ * 
+*/
+  ```
+
+### Create JWT token for Sign Up and Social Login users
+
+    ```sh
+     step-1: create social login file
+
+    ```
 
 # CRUD Method-Database Integrate
 
 ## step by step New database setup
+
 - Mongodb Database connection for new database
   ```sh
    Go to mongodb atlas site
    > Database > connect >Drivers >copy & paste it index.js file
    > create file(.env) for keep password
-   > In index.js file: require('dotenv').config() 
+   > In index.js file: require('dotenv').config()
      DB_USER=docUser
      DB_PASS=rfzGdApBdPpLH2kF
    > check:console.log(process.env.DB_PASS)
-   > convert the username pass holder in template string & 
+   > convert the username pass holder in template string &
    keep username & password
    const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.8uchuib.
    mongodb.net/?retryWrites=true&w=majority`;
@@ -147,7 +207,7 @@
   ```
 - Send data from client side to server side using fetch
   ```sh
-  > fetch("http://localhost:5000/coffee", {
+  > fetch("https://car-doctor-server-three-weld.vercel.app/coffee", {
       method: "POST",
       headers: {
         "content-type": "application/json",
@@ -203,13 +263,13 @@
    step-2: load data in client side from server link
    >path: "/",
     element: <App></App>,
-    loader: () => fetch("http://localhost:5000/coffee"),
+    loader: () => fetch("https://car-doctor-server-three-weld.vercel.app/coffee"),
     step-2.1: In the created file use useLoaderData
     >const coffees=useLoaderData()
 
           for read some data
    step-1: app.get('/bookings',async(req,res)=>{
-    
+
    })
 
 
@@ -228,7 +288,7 @@
     step-2: load data in client side from server link
        > path:'/checkout/:id',
         element:<Checkout></Checkout>,
-        loader:({params})=>fetch(`http://localhost:5000/services/${params.id}`)
+        loader:({params})=>fetch(`https://car-doctor-server-three-weld.vercel.app/services/${params.id}`)
     step-2.1: In the created file use useLoaderData
     >const checkout=useLoaderData()
   ```
@@ -245,7 +305,7 @@
             >X</button>
    > const handleDelete=_id=>{
     console.log('delete',_id)
-    fetch(`http://localhost:5000/users/${_id}`,{
+    fetch(`https://car-doctor-server-three-weld.vercel.app/users/${_id}`,{
       method:'DELETE',
 
     })
@@ -271,7 +331,7 @@
     }).then((result) => {
       if (result.isConfirmed) {
         // Swal.fire("Deleted!", "Your file has been deleted.", "success");
-        fetch(`http://localhost:5000/coffee/${_id}`, {
+        fetch(`https://car-doctor-server-three-weld.vercel.app/coffee/${_id}`, {
           method: "DELETE",
         })
           .then((res) => res.json())
@@ -308,7 +368,7 @@
 ### Update Data
 
 - Update data
-   
+
   ```sh
        put=na thakle add kore deewa
        patch=thakle oita update kora
@@ -325,7 +385,7 @@
    > {
     path: "/updateCoffee/:id",
     element: <UpdateCoffee></UpdateCoffee>,
-    loader: ({ params }) => fetch(`http://localhost:5000/coffee/${params.id}`),
+    loader: ({ params }) => fetch(`https://car-doctor-server-three-weld.vercel.app/coffee/${params.id}`),
   },
 
    step-3: create a dynamic link button
@@ -344,7 +404,7 @@
 
     send from client-side> receive server-side> update database>client side>display user
     step-4: client side data send by PUT method like post method
-    > fetch(`http://localhost:5000/users/${loadedUser._id}`,{
+    > fetch(`https://car-doctor-server-three-weld.vercel.app/users/${loadedUser._id}`,{
       method:'PUT',
       headers:{
         'content-type':'application/json'
@@ -406,14 +466,16 @@
 
   ```
 
-#  express.js-Backend
+# express.js-Backend
 
-##  Reuse:step by step set-up
-  ```sh
-     step-1: create file >mkdir file-name, run command on this file >npm init -y & Express install: npm install express 
-     or npm i express or npm  i express cors mongodb dotenv
-     step-2: Add in script > "start": "node index.js",
-  ```
+## Reuse:step by step set-up
+
+```sh
+   step-1: create file >mkdir file-name, run command on this file >npm init -y & Express install: npm install express
+   or npm i express or npm  i express cors mongodb dotenv
+   step-2: Add in script > "start": "node index.js",
+```
+
 ```sh
                 Go to hello world doc
 step-3.1:  create file named same as entry point from package.json file (index.js)
@@ -433,7 +495,7 @@ step-3.8: check by nodemon for watch live updating
     check version >nodemon -v
     start server watch >nodemon index.js
 step-3.9: create file(.env) root of the project
-   > In index.js file: require('dotenv').config() 
+   > In index.js file: require('dotenv').config()
 
 
                        middleware setup
@@ -445,7 +507,7 @@ step-4.2: In server index.js file import
  > app.use(cors())
  > app.use(express.json()); {
    In a Node.js and Express application, the app.use(express.json()) middleware is used to parse
-   incoming JSON data from client requests. When a client sends a request with JSON data in the 
+   incoming JSON data from client requests. When a client sends a request with JSON data in the
    request body, this middleware parses the JSON data and populates the req.body object with the parsed data}
 ```
 
@@ -588,56 +650,64 @@ step-4.2: In server index.js file import
     const result = await usersCollection.insertOne(user);
     res.send(result);
 ```
+
 # Firebase-React Authentication
+
 ## setup firebase in project
+
 1. create firebase project & create a web app
 2. npm install firebase & save firebase config and export app
 3. Build >Authentication >Get started >Enable SignIn method
 4. Complete the sign up & Login form
 5. Add onSubmit handler for collect form data
-    ```sh
-    onSubmit={handleSignUp}
 
-    const handleSignUp=event=>{
-      event.preventDefault()
-      const form=event.target
-      const email=form.email.value
-      const password=form.password.value
-      const confirmPassword=form.confirm.value
-      console.log(email,password,confirmPassword)
-      }
-    ```
+   ```sh
+   onSubmit={handleSignUp}
+
+   const handleSignUp=event=>{
+     event.preventDefault()
+     const form=event.target
+     const email=form.email.value
+     const password=form.password.value
+     const confirmPassword=form.confirm.value
+     console.log(email,password,confirmPassword)
+     }
+   ```
+
 6. validation form data
-    ```sh
-      step-1: declare state
-      const [error, setError] = useState("");
 
-      step-2:Add condition for validation
-      if(password!==confirmPassword){
-      setError('Your password did not match')
-      return
-    }
-      else if (!/(?=.*[A-Z])/.test(password)) {
-        setError("Please Add at least one uppercase");
-        return;
-      } else if (!/(?=.*[A-Z].*[A-Z])/.test(password)) {
-        setError("Please add at least two numbers");
-        return;
-      } else if (password.length < 6) {
-        setError("Please add at least 6 character in your password");
-        return;
-      }
+   ```sh
+     step-1: declare state
+     const [error, setError] = useState("");
 
-      step-3: Display the catch error if exist
-      <p className="text-error">{error}</p>
-    ```
+     step-2:Add condition for validation
+     if(password!==confirmPassword){
+     setError('Your password did not match')
+     return
+   }
+     else if (!/(?=.*[A-Z])/.test(password)) {
+       setError("Please Add at least one uppercase");
+       return;
+     } else if (!/(?=.*[A-Z].*[A-Z])/.test(password)) {
+       setError("Please add at least two numbers");
+       return;
+     } else if (password.length < 6) {
+       setError("Please add at least 6 character in your password");
+       return;
+     }
+
+     step-3: Display the catch error if exist
+     <p className="text-error">{error}</p>
+   ```
+
 7. {context Api/redux(redux-toolkit)/database} for share form authentication information in every route
 
-    here for context api:
+   here for context api:
 
-    step-1: create context Provider file(AuthProvider)
+   step-1: create context Provider file(AuthProvider)
 
-    step-2: createContext with export & set context value with children props
+   step-2: createContext with export & set context value with children props
+
    ```sh
      export const AuthContext=createContext(null);
 
@@ -652,7 +722,8 @@ step-4.2: In server index.js file import
      </AuthContext.Provider>
      );};
    ```
-8. set the AuthProvider path 
+
+8. set the AuthProvider path
    ```sh
       ReactDOM.createRoot(document.getElementById("root")).render(
       <React.StrictMode>
@@ -662,7 +733,7 @@ step-4.2: In server index.js file import
       </React.StrictMode>
       );
    ```
-9. Now createContext as useContext For use Another component 
+9. Now createContext as useContext For use Another component
    ```sh
     1. const {user,createUser}=useContext(AuthContext)
     1. const {user,signIn}=useContext(AuthContext)
@@ -682,12 +753,13 @@ step-4.2: In server index.js file import
     const [user,setUser]=useState(null)
     ```
 12. for register
+
     ```sh
       step-1: In AuthProvider file
       const createUser=(email,password)=>{
         return createUserWithEmailAndPassword(auth,email,password); //its firebase function
       }
-       
+
        step-2:set createUser in context object
 
        step-3: In register/signUp file: call the function in eventHandler function:
@@ -703,18 +775,21 @@ step-4.2: In server index.js file import
           console.log(error)
         })
     ```
+
 13. For reset Error
+
     ```sh
-        setError("") //call it before validation 
+        setError("") //call it before validation
     ```
 
 14. for Login/signIn
+
     ```sh
       step-1: In AuthProvider file
       const signIn=(email,password)=>{
         return signInWithEmailAndPassword(auth,email,password); //its firebase function
       }
-       
+
        step-2:set signIn in context object
 
        step-3: In signIn/Login file: call the function in eventHandler function:
@@ -731,7 +806,9 @@ step-4.2: In server index.js file import
           console.log(error)
         })
     ```
+
 15. For logOut: we will use logout in header file
+
     ```sh
       step-1: In AuthProvider file
       const logOut=()=>{
@@ -745,14 +822,14 @@ step-4.2: In server index.js file import
 
     ```
 
-### Here Just set up firebase sign Up, Login & LogOut using Context API from one file & step-11 still null 
+### Here Just set up firebase sign Up, Login & LogOut using Context API from one file & step-11 still null
 
 16. For set value in step-11 user need call outside api by useEffect
 
     what's the purpose of onAuthStateChanged in Firebase authentication?
     Answer: It listens for changes in the user authentication state.
-    
-     What's the work of unsubscribe? Answer: catch the changes 
+
+    What's the work of unsubscribe? Answer: catch the changes
 
     ```sh
       /* observer user auth state */
@@ -768,8 +845,9 @@ step-4.2: In server index.js file import
     ```
 
 17. Private Route & Navigate after Login
+
     ```sh
-      step-1: create file 
+      step-1: create file
       const PrivateRoute = ({children}) => {
       const {user}=useContext(AuthContext);
       if(user){
@@ -779,11 +857,12 @@ step-4.2: In server index.js file import
     };
     step-2: do private which route want to private
      <PrivateRoute>
-            <CheckOut></CheckOut> 
+            <CheckOut></CheckOut>
     </PrivateRoute>
     ```
 
 18. For ignore Re-loading issue
+
     ```sh
         step-1: In AuthProvider file create a useState
         const [loading,setLoading]=useState(true)
@@ -793,12 +872,12 @@ step-4.2: In server index.js file import
 
         step-3: If state gonna change then call setLoading in useEffect
         > setLoading(false)
-        
-        step-4: For use it now call it in context 
+
+        step-4: For use it now call it in context
         loading,
 
         step-5:use it PrivateRoute
-        const {user,loading}=useContext(AuthContext) 
+        const {user,loading}=useContext(AuthContext)
         if(loading){
         return <progress className="progress w-56"></progress>;
       }
@@ -809,11 +888,12 @@ step-4.2: In server index.js file import
           useNavigate from react Router dom
       step-1: In login file set useNavigate state
       const navigate=useNavigate()
-      
+
       step-2: In Login file call it in below of signIn(email,password) & within   .then(result=>{})
       > navigate('/')
     ```
 20. After Login Redirect Navigate to the right route
+
     ```sh
       step-1: In login & PrivateRoute both file set
         > const location=useLocation()
@@ -821,13 +901,13 @@ step-4.2: In server index.js file import
 
       step-2:In PrivateRoute set state={{from: location}} replace in Navigate
       return<Navigate to="/login" state={{from: location}} replace></Navigate>
-      
+
       step-3: In login file
       const navigate=useNavigate();
       const from=location.state?.from?.pathname || '/'
 
-      
-      step-4: In login file call it in signIn/login function 
+
+      step-4: In login file call it in signIn/login function
        navigate(from,{replace:true})
     ```
 
@@ -844,23 +924,24 @@ step-4.2: In server index.js file import
         * One time per PC
         * 1. npm install -g firebase-tools
         * 2. firebase login
-        * 
+        *
         * For each project one time
         * 1. firebase init
-        * 2. proceed 
+        * 2. proceed
         * 3. hosting: firebase (up and down arrow) use space bar to select
-        * 4. existing project 
+        * 4. existing project
         * 5. select the project careful
         * 6. which project as public directory: dist
         * 7. single page application: yes
         * 8. continuous deployment: no
-        * 
+        *
         * For every time deploy
         * 1. npm run build
         * 2. firebase deploy
     ```
 
 22. show password
+
     ```sh
       step-1: set state
         const [show,setShow]=useState(false)
@@ -871,10 +952,11 @@ step-4.2: In server index.js file import
               show? <span>Hide Password</span>:<span>Show password</span>
             }
             </small></p>
-      
+
       step-3: set input type with ternary condition
         type={show? "text": "password"}
     ```
+
 23. Accept Terms and conditions
 
     ```sh
@@ -908,9 +990,10 @@ step-4.2: In server index.js file import
 24. firebase setup
     ```sh
     step-1: firebase init
-    step-2: npm run build 
+    step-2: npm run build
     step-3: firebase deploy
     ```
+
 # VS code set up
 
 - Word wrap
@@ -937,8 +1020,7 @@ step-4.2: In server index.js file import
 - Auto Import
 - Auto Rename Tag
 - ESLint
-- npm intelligence 
+- npm intelligence
 - Postman
 - Stylelint
 - VSCode React Refactor
-

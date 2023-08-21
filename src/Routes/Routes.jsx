@@ -11,33 +11,44 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Main></Main>,
-    children:[
+    children: [
       {
-        path:'/',
-        element:<Home></Home>
+        path: "/",
+        element: <Home></Home>,
       },
       {
-        path:'/login',
-        element:<Login></Login>
+        path: "/login",
+        element: <Login></Login>,
       },
       {
-        path:'signUp',
-        element:<SignUp></SignUp>
+        path: "signUp",
+        element: <SignUp></SignUp>,
       },
       {
         path: "/book/:id",
-        element:<PrivateRoute><BookService></BookService></PrivateRoute>,
-        loader:({params})=>fetch(`http://localhost:5000/services/${params.id}`)
+        element: (
+          <PrivateRoute>
+            <BookService></BookService>
+          </PrivateRoute>
+        ),
+        loader: ({ params }) =>
+          fetch(
+            `https://car-doctor-server-three-weld.vercel.app/services/${params.id}`
+          ),
       },
-    /*   {
+      /*   {
         path:'/bookings',
         element:<Bookings></Bookings>
       }, */
       {
-        path:'/bookings',
-        element:<PrivateRoute><Bookings></Bookings></PrivateRoute>
-      }
-    ]
+        path: "/bookings",
+        element: (
+          <PrivateRoute>
+            <Bookings></Bookings>
+          </PrivateRoute>
+        ),
+      },
+    ],
   },
 ]);
 export default router;
